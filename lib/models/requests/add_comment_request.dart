@@ -1,10 +1,10 @@
 import 'dart:ffi';
 
-class CommentRequest{
+class AddCommentRequest{
   Int postId;
   String content;
 
-  CommentRequest({
+  AddCommentRequest({
     required this.postId,
     required this.content
 });
