@@ -1,8 +1,8 @@
-class PostRequest {
+class AddPostRequest {
   final String content;
   final String? base64Image;
 
-  const PostRequest({
+  const AddPostRequest({
     required this.content,
     this.base64Image,
   });
