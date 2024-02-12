@@ -1,57 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'package:xlike/models/post.dart';
-import 'package:xlike/posts/blocs/posts_bloc/posts_bloc.dart';
-import 'package:xlike/posts/screens/add_post_screen.dart';
+import 'package:xlike/posts/blocs/user_posts_bloc/user_posts_bloc.dart';
 import 'package:xlike/posts/screens/post_detail_screen.dart';
-import 'package:xlike/posts/widgets/account_icon.dart';
 import 'package:xlike/posts/widgets/post_item.dart';
 
-class PostsScreen extends StatefulWidget {
-  static const String routeName = '/';
+class UserPostsScreen extends StatefulWidget {
+  static const String routeName = '/userPosts';
 
-  static void navigateTo(BuildContext context) {
-    Navigator.of(context).pushNamed(routeName);
+  static void navigateTo(BuildContext context, int userId) {
+    Navigator.of(context).pushNamed(routeName, arguments: userId);
   }
 
-  const PostsScreen({super.key});
+  const UserPostsScreen({
+    super.key,
+    required this.userId,
+  });
+
+  final int userId;
 
   @override
-  State<PostsScreen> createState() => _PostsScreenState();
+  State<UserPostsScreen> createState() => _UserPostsScreenState();
 }
 
-class _PostsScreenState extends State<PostsScreen> {
+class _UserPostsScreenState extends State<UserPostsScreen> {
   @override
   void initState() {
     super.initState();
-    final postsBloc = BlocProvider.of<PostsBloc>(context);
-    postsBloc.add(GetAllPosts());
+    final userPostsBloc = BlocProvider.of<UserPostsBloc>(context);
+    userPostsBloc.add(GetAllPostsOfUser(userId: widget.userId));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Posts'),
-        actions: [
-          AccountIcon(
-            onTap: () => _onLoginIconTap(context),
-          )
-        ],
+        title: const Text('Posts d\'un utilisateur'),
       ),
-      body: BlocBuilder<PostsBloc, PostsState>(
+      body: BlocBuilder<UserPostsBloc, UserPostsState>(
         builder: (context, state) {
           switch (state.status) {
-            case PostsStatus.initial || PostsStatus.loading:
+            case UserPostsStatus.initial || UserPostsStatus.loading:
               return const Center(
                 child: CircularProgressIndicator(),
               );
-            case PostsStatus.error:
+            case UserPostsStatus.error:
               return const Center(
                 child: Text('Oups, une erreur est survenue.'),
               );
-            case PostsStatus.success:
+            case UserPostsStatus.success:
               final posts = state.posts;
               return RefreshIndicator(
                 onRefresh: _refreshPosts,
@@ -70,10 +67,6 @@ class _PostsScreenState extends State<PostsScreen> {
           }
         },
       ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.post_add),
-        onPressed: () => _onAddPost(context),
-      ),
     );
   }
 
@@ -81,18 +74,8 @@ class _PostsScreenState extends State<PostsScreen> {
     PostDetailScreen.navigateTo(context, post);
   }
 
-  void _onLoginIconTap(BuildContext context) {
-    // go to login page
-  }
-
-  void _onAddPost(BuildContext context) {
-    AddPostScreen.navigateTo(context);
-  }
-
   Future<void> _refreshPosts() async {
-    final postsBloc = BlocProvider.of<PostsBloc>(context);
-    postsBloc.add(GetAllPosts());
+    final userPostsBloc = BlocProvider.of<UserPostsBloc>(context);
+    userPostsBloc.add(GetAllPostsOfUser(userId: widget.userId));
   }
-
 }
-

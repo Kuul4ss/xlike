@@ -4,7 +4,7 @@ part of 'comments_bloc.dart';
 abstract class CommentsEvent {}
 
 class AddComment extends CommentsEvent {
-  final AddCommentRequest request;
+  final CreateCommentRequest request;
 
   AddComment({required this.request});
 }
