@@ -1,5 +1,5 @@
 import 'package:xlike/models/comment.dart';
-import 'package:xlike/models/requests/add_comment_request.dart';
+import 'package:xlike/models/requests/create_comment_request.dart';
 import 'package:xlike/posts/services/comments/comments_data_source.dart';
 
 class CommentsRepository {
@@ -7,7 +7,7 @@ class CommentsRepository {
 
   CommentsRepository({required this.commentsDataSource});
 
-  Future<Comment> addComment(AddCommentRequest request) async {
+  Future<Comment> addComment(CreateCommentRequest request) async {
     return commentsDataSource.addComment(request);
   }
 }

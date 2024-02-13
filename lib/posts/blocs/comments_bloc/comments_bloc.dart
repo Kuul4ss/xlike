@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
 import 'package:xlike/models/comment.dart';
-import 'package:xlike/models/requests/add_comment_request.dart';
+import 'package:xlike/models/requests/create_comment_request.dart';
 import 'package:xlike/posts/services/comments/comments_repository.dart';
 
 part 'comments_event.dart';

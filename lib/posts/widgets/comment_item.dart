@@ -1,24 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:xlike/models/comment.dart';
 
 import 'package:xlike/models/post.dart';
 
-class PostItem extends StatelessWidget {
-  const PostItem({
+class CommentItem extends StatelessWidget {
+  const CommentItem({
     super.key,
-    required this.post,
-    this.onTap,
+    required this.comment,
   });
 
-  final Post post;
-  final VoidCallback? onTap;
+  final Comment comment;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
       child: Card(
-        margin: const EdgeInsets.all(8.0),
+        color: Colors.white70,
+        margin: const EdgeInsets.symmetric(horizontal: 20),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -35,13 +34,11 @@ class PostItem extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                          post.author?.name ?? "anonymous",
+                          comment.author?.name ?? "anonymous",
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          DateFormat('yyyy-MM-dd – kk:mm').format(
-                              DateTime.fromMillisecondsSinceEpoch(
-                                  post.createdAt ?? 0)),
+                          DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.fromMillisecondsSinceEpoch(comment.createdAt ?? 0)),
                           style: const TextStyle(color: Colors.grey),
                         ),
                       ],
@@ -49,33 +46,14 @@ class PostItem extends StatelessWidget {
                   ),
                 ],
               ),
-              if (post.image != null && post.image!.url != null) ...[
-                const SizedBox(height: 10.0),
-                Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Center(
-                    child: Image.network(
-                      post.image!.url!,
-                      height: 200,
-                    ),
-                  ),
-                ),
-              ],
               const SizedBox(height: 10.0),
-              Text(post.content.toString()),
+              Text(comment.content.toString()),
               const SizedBox(height: 10.0),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const Icon(Icons.comment, size: 20.0, color: Colors.grey),
-                  const SizedBox(width: 5.0),
-                  Text(post.commentsCount.toString()),
-                ],
-              ),
             ],
           ),
         ),
-      ),
+      )
     );
   }
+
 }

@@ -3,10 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:xlike/models/post.dart';
-import 'package:xlike/posts/posts_bloc/posts_bloc.dart';
+import 'package:xlike/posts/blocs/posts_bloc/posts_bloc.dart';
+import 'package:xlike/posts/screens/add_post_screen.dart';
 import 'package:xlike/posts/screens/post_detail_screen.dart';
+import 'package:xlike/posts/widgets/account_icon.dart';
 import 'package:xlike/posts/widgets/post_item.dart';
-import 'package:xlike/posts/widgets/search_icon.dart';
 
 class PostsScreen extends StatefulWidget {
   static const String routeName = '/post';
@@ -35,9 +36,9 @@ class _PostsScreenState extends State<PostsScreen> {
       appBar: AppBar(
         title: const Text('Posts'),
         actions: [
-          SearchIcon(
-            onTap: () => _onSearchIconTap(context),
-          ),
+          AccountIcon(
+            onTap: () => _onLoginIconTap(context),
+          )
         ],
       ),
       body: BlocBuilder<PostsBloc, PostsState>(
@@ -53,19 +54,26 @@ class _PostsScreenState extends State<PostsScreen> {
               );
             case PostsStatus.success:
               final posts = state.posts;
-              return ListView.separated(
-                itemCount: posts.length,
-                separatorBuilder: (context, _) => const SizedBox(height: 5),
-                itemBuilder: (context, index) {
-                  final post = posts[index];
-                  return PostItem(
-                    post: post,
-                    onTap: () => _onPostTap(context, post),
-                  );
-                },
+              return RefreshIndicator(
+                onRefresh: _refreshPosts,
+                child: ListView.separated(
+                  itemCount: posts.length,
+                  separatorBuilder: (context, _) => const SizedBox(height: 5),
+                  itemBuilder: (context, index) {
+                    final post = posts[index];
+                    return PostItem(
+                      post: post,
+                      onTap: () => _onPostTap(context, post),
+                    );
+                  },
+                ),
               );
           }
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.post_add),
+        onPressed: () => _onAddPost(context),
       ),
     );
   }
@@ -75,8 +83,17 @@ class _PostsScreenState extends State<PostsScreen> {
     loadUserData();
   }
 
-  void _onSearchIconTap(BuildContext context) {
-    //CartScreen.navigateTo(context);
+  void _onLoginIconTap(BuildContext context) {
+    // go to login page
+  }
+
+  void _onAddPost(BuildContext context) {
+    AddPostScreen.navigateTo(context);
+  }
+
+  Future<void> _refreshPosts() async {
+    final postsBloc = BlocProvider.of<PostsBloc>(context);
+    postsBloc.add(GetAllPosts());
   }
 
   Future<Map<String, String>> getUserData() async {

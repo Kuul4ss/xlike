@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:xlike/models/comment.dart';
 import 'package:xlike/models/post.dart';
-import 'package:xlike/posts/comments_bloc/comments_bloc.dart';
-import 'package:xlike/posts/post_detail_bloc/post_detail_bloc.dart';
 import 'package:xlike/posts/screens/posts_screen.dart';
-import 'package:xlike/posts/widgets/home_icon.dart';
+import 'package:xlike/posts/screens/user_posts_screen.dart';
+import 'package:xlike/posts/widgets/comment_item.dart';
 import 'package:xlike/posts/widgets/search_icon.dart';
 
-
+import '../blocs/comments_bloc/comments_bloc.dart';
+import '../blocs/post_detail_bloc/post_detail_bloc.dart';
 
 class PostDetailScreen extends StatefulWidget {
   static const String routeName = '/postDetail';
@@ -30,7 +29,6 @@ class PostDetailScreen extends StatefulWidget {
 }
 
 class _PostDetailScreenState extends State<PostDetailScreen> {
-
   @override
   void initState() {
     super.initState();
@@ -47,9 +45,6 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           SearchIcon(
             onTap: () => _onSearchIconTap(context),
           ),
-          HomeIcon(
-            onTap: () => _onHomeIconTap(context),
-          ),
         ],
       ),
       body: BlocBuilder<PostDetailBloc, PostDetailState>(
@@ -65,50 +60,89 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
               );
             case PostDetailStatus.success:
               final post = state.post;
-              return Card(
-                margin: const EdgeInsets.all(8.0),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
+              return Column(
+                children: [
+                  Card(
+                    margin: const EdgeInsets.all(8.0),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const CircleAvatar(
-                            child: Icon(Icons.person, size: 20.0, color: Colors.white),
+                          Row(
+                            children: [
+                              const CircleAvatar(
+                                child: Icon(Icons.person,
+                                    size: 20.0, color: Colors.white),
+                              ),
+                              const SizedBox(width: 10.0),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: <Widget>[
+                                    Text(
+                                      post?.author?.name ?? "anonymous",
+                                      style: const TextStyle(
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      DateFormat('yyyy-MM-dd – kk:mm').format(
+                                          DateTime.fromMillisecondsSinceEpoch(
+                                              post?.createdAt ?? 0)),
+                                      style:
+                                          const TextStyle(color: Colors.grey),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 10.0),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Text(
-                                  post?.author?.name ?? "anonymous",
-                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                          if (post?.image != null &&
+                              post?.image!.url != null) ...[
+                            const SizedBox(height: 10.0),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Center(
+                                child: GestureDetector(
+                                  onTap: () =>
+                                      _onImageTap(context, post.image!.url!),
+                                  child: Image.network(
+                                    post!.image!.url!,
+                                    height: 200,
+                                  ),
                                 ),
-                                Text(
-                                  DateFormat('yyyy-MM-dd – kk:mm').format(DateTime.fromMillisecondsSinceEpoch(post?.createdAt ?? 0)),
-                                  style: const TextStyle(color: Colors.grey),
-                                ),
-                              ],
+                              ),
                             ),
+                          ],
+                          const SizedBox(height: 10.0),
+                          Text(post?.content.toString() ?? "nothing ?"),
+                          const SizedBox(height: 10.0),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              const Icon(Icons.comment,
+                                  size: 20.0, color: Colors.grey),
+                              const SizedBox(width: 5.0),
+                              Text(post?.comments?.length.toString() ?? "0"),
+                            ],
                           ),
                         ],
                       ),
-                      const SizedBox(height: 10.0),
-                      Text(post?.content.toString() ?? "nothing ?"),
-                      const SizedBox(height: 10.0),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const Icon(Icons.comment, size: 20.0, color: Colors.grey),
-                          const SizedBox(width: 5.0),
-                          Text(post?.comments?.length.toString() ?? "0"),
-                        ],
-                      ),
-                    ],
+                    ),
                   ),
-                ),
+                  Text("Commentaires"),
+                  Expanded(
+                    child: ListView.separated(
+                      itemCount: post?.comments?.length ?? 0,
+                      separatorBuilder: (context, _) =>
+                          const SizedBox(height: 5),
+                      itemBuilder: (context, index) {
+                        final comment = post?.comments?[index];
+                        return CommentItem(comment: comment!);
+                      },
+                    ),
+                  )
+                ],
               );
           }
         },
@@ -125,15 +159,29 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
     );
   }
 
-  void _onHomeIconTap(BuildContext context) {
-    PostsScreen.navigateTo(context);
-  }
-
   void _onSearchIconTap(BuildContext context) {
-    PostsScreen.navigateTo(context);
+    UserPostsScreen.navigateTo(context, widget.post.author!.id!);
   }
 
-  void _onAddComment(BuildContext context) {/*
+  void _onImageTap(BuildContext context, String url) {
+    showDialog(
+      context: context,
+      builder: (_) => GestureDetector(
+        onTap: () => Navigator.pop(context),
+        child: Dialog(
+          backgroundColor: Colors.transparent,
+          child: Center(
+            child: Image.network(
+              url,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _onAddComment(BuildContext context) {
+    /*
     //final cartBloc = BlocProvider.of<CartBloc>(context);
     final commentBloc = context.read<CommentBloc>();
     commentBloc.add(AddComment(comment: comment));*/

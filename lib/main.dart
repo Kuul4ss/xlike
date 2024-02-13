@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:xlike/models/post.dart';
-import 'package:xlike/posts/comments_bloc/comments_bloc.dart';
-import 'package:xlike/posts/post_detail_bloc/post_detail_bloc.dart';
-import 'package:xlike/posts/posts_bloc/posts_bloc.dart';
+import 'package:xlike/posts/blocs/comments_bloc/comments_bloc.dart';
+import 'package:xlike/posts/blocs/post_detail_bloc/post_detail_bloc.dart';
+import 'package:xlike/posts/blocs/posts_bloc/posts_bloc.dart';
+import 'package:xlike/posts/blocs/user_posts_bloc/user_posts_bloc.dart';
+import 'package:xlike/posts/screens/add_post_screen.dart';
 import 'package:xlike/posts/screens/post_detail_screen.dart';
 import 'package:xlike/posts/screens/posts_screen.dart';
+import 'package:xlike/posts/screens/user_posts_screen.dart';
 import 'package:xlike/posts/services/comments/comments_api_data_source.dart';
 import 'package:xlike/posts/services/comments/comments_repository.dart';
 import 'package:xlike/posts/services/posts/posts_api_data_source.dart';
@@ -49,11 +52,10 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
-        RepositoryProvider<PostsRepository>(
-          create: (context) => PostsRepository(postsDataSource: PostsApiDataSource()),
-        ),
-        RepositoryProvider<CommentsRepository>(
-          create: (context) => CommentsRepository(commentsDataSource: CommentsApiDataSource()),
+        RepositoryProvider(
+          create: (context) => PostsRepository(
+            postsDataSource: PostsApiDataSource(),
+          ),
         ),
         RepositoryProvider<UserRepository>(
           create: (context) => UserRepository(userDataSource: UserApiDataSource()),
@@ -61,11 +63,20 @@ class _MyAppState extends State<MyApp> {
       ],
       child: MultiBlocProvider(
         providers: [
-          BlocProvider<PostsBloc>(
-            create: (context) => PostsBloc(postsRepository: context.read<PostsRepository>()),
+          BlocProvider(
+            create: (context) => PostsBloc(
+              postsRepository: context.read<PostsRepository>(),
+            ),
           ),
-          BlocProvider<PostDetailBloc>(
-            create: (context) => PostDetailBloc(postsRepository: context.read<PostsRepository>()),
+          BlocProvider(
+            create: (context) => PostDetailBloc(
+              postsRepository: context.read<PostsRepository>(),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => UserPostsBloc(
+              postsRepository: context.read<PostsRepository>(),
+            ),
           ),
           BlocProvider<CommentsBloc>(
             create: (context) => CommentsBloc(commentsRepository: context.read<CommentsRepository>()),
@@ -79,6 +90,7 @@ class _MyAppState extends State<MyApp> {
         ],
         child: MaterialApp(
           routes: {
+            '/addPost': (context) => const AddPostScreen(),
             '/signup': (context) => const SignupScreen(),
             '/login': (context) => const LoginScreen(),
             '/post': (context) => const PostsScreen(),
@@ -92,7 +104,14 @@ class _MyAppState extends State<MyApp> {
                   content = PostDetailScreen(post: arguments);
                 }
                 break;
+              case UserPostsScreen.routeName:
+                final arguments = settings.arguments;
+                if (arguments is int) {
+                  content = UserPostsScreen(userId: arguments);
+                }
+                break;
             }
+
             return MaterialPageRoute(builder: (context) => content);
           },
           title: 'Votre App',
