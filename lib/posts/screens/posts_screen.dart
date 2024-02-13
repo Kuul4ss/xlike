@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:xlike/models/post.dart';
 import 'package:xlike/posts/blocs/posts_bloc/posts_bloc.dart';
@@ -9,7 +10,7 @@ import 'package:xlike/posts/widgets/account_icon.dart';
 import 'package:xlike/posts/widgets/post_item.dart';
 
 class PostsScreen extends StatefulWidget {
-  static const String routeName = '/';
+  static const String routeName = '/post';
 
   static void navigateTo(BuildContext context) {
     Navigator.of(context).pushNamed(routeName);
@@ -79,6 +80,7 @@ class _PostsScreenState extends State<PostsScreen> {
 
   void _onPostTap(BuildContext context, Post post) {
     PostDetailScreen.navigateTo(context, post);
+    loadUserData();
   }
 
   void _onLoginIconTap(BuildContext context) {
@@ -93,6 +95,30 @@ class _PostsScreenState extends State<PostsScreen> {
     final postsBloc = BlocProvider.of<PostsBloc>(context);
     postsBloc.add(GetAllPosts());
   }
+
+  Future<Map<String, String>> getUserData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Get the data from SharedPreferences
+    String? id = prefs.getString('id');
+    String? authToken = prefs.getString('authToken');
+
+    return {
+      'id': id ?? '',
+      'authToken': authToken ?? '',
+    };
+  }
+
+  void loadUserData() async {
+    try {
+      Map<String, String> userData = await getUserData();
+      print("User id: ${userData['id']}");
+      print("Auth Token: ${userData['authToken']}");
+    } catch (e) {
+      print("Failed to load user data: $e");
+    }
+  }
+
 
 }
 

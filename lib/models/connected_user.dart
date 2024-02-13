@@ -1,25 +1,21 @@
 import 'dart:ffi';
 
+import 'package:xlike/models/user.dart';
+
 class ConnectedUser {
-  final Int id;
-  final DateTime createdAt;
-  final String name;
-  final String email;
+  final String authToken;
+  final User user;
 
 
   const ConnectedUser({
-    required this.id,
-    required this.createdAt,
-    required this.name,
-    required this.email
+    required this.authToken,
+    required this.user
   });
 
   factory ConnectedUser.fromJson(Map<String, dynamic> json) {
     return ConnectedUser(
-      id: json['id'],
-      createdAt: json['created_at'],
-      name: json['name'],
-      email: json['email'],
+      authToken: json['authToken'],
+      user:  User.fromJson(json['user']),
     );
   }
 }

@@ -1,0 +1,58 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:xlike/authentication/screens/singup_screen.dart';
+import 'package:xlike/authentication/user_bloc/user_bloc.dart';
+import '../widgets/login_form.dart';
+
+
+class LoginScreen extends StatelessWidget {
+  static const String routeName = '/login';
+
+  const LoginScreen({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocListener<UserBloc, UserState>(
+      listener: (context, state) {
+        switch (state.status) {
+          case UserStatus.loginSuccess:
+            Navigator.of(context).pushReplacementNamed('/post');
+            break;
+          case UserStatus.error:
+            _showSnackBar(context, 'Erreur de connexion');
+            break;
+          case UserStatus.loginLoading:
+            _showSnackBar(context, 'Connexion en cours...');
+            break;
+          default:
+            break;
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Connexion'),
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              LoginForm(),
+              TextButton(
+                onPressed: () => Navigator.of(context).pushNamed(SignupScreen.routeName),
+                child: Text('Pas de compte ? Inscrivez-vous'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+      ),
+    );
+  }
+}
