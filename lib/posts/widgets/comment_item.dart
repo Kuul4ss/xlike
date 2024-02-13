@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:xlike/models/comment.dart';
+import 'package:xlike/models/domain/comment.dart';
 
-import 'package:xlike/models/post.dart';
+import 'package:xlike/models/domain/post.dart';
 
 class CommentItem extends StatelessWidget {
   const CommentItem({

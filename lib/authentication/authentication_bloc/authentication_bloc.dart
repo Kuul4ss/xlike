@@ -2,7 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import '../../models/user.dart';
+import 'package:xlike/models/domain/user.dart';
 import '../services/user_repository.dart';
 
 

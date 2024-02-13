@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:xlike/models/post.dart';
+import 'package:xlike/models/domain/post.dart';
 import 'package:xlike/posts/blocs/user_posts_bloc/user_posts_bloc.dart';
 import 'package:xlike/posts/screens/post_detail_screen.dart';
 import 'package:xlike/posts/widgets/post_item.dart';

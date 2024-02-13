@@ -1,10 +1,10 @@
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:xlike/authentication/services/user_data_source.dart';
-import 'package:xlike/models/connected_user.dart';
+import 'package:xlike/models/domain/connected_user.dart';
+import 'package:xlike/models/domain/user.dart';
 import 'package:xlike/models/requests/login_request.dart';
 import 'package:xlike/models/requests/signup_request.dart';
 
-import '../../models/user.dart';
 
 class UserRepository {
 

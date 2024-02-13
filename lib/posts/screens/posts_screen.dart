@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'package:xlike/models/post.dart';
+import 'package:xlike/models/domain/post.dart';
 import 'package:xlike/posts/blocs/posts_bloc/posts_bloc.dart';
 import 'package:xlike/posts/screens/add_post_screen.dart';
 import 'package:xlike/posts/screens/post_detail_screen.dart';
@@ -88,6 +88,7 @@ class _PostsScreenState extends State<PostsScreen> {
   }
 
   void _onAddPost(BuildContext context) {
+
     AddPostScreen.navigateTo(context);
   }
 

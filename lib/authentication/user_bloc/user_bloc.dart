@@ -1,10 +1,10 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:xlike/models/connected_user.dart';
+import 'package:xlike/models/domain/connected_user.dart';
+import 'package:xlike/models/domain/user.dart';
 import 'package:xlike/models/requests/signup_request.dart';
 import '../../models/requests/login_request.dart';
-import '../../models/user.dart';
 import '../services/user_repository.dart';
 
 part 'user_event.dart';

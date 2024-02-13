@@ -1,6 +1,6 @@
-import 'package:xlike/models/comment.dart';
-import 'package:xlike/models/image.dart';
-import 'package:xlike/models/user.dart';
+import 'package:xlike/models/domain/comment.dart';
+import 'package:xlike/models/domain/image.dart';
+import 'package:xlike/models/domain/user.dart';
 
 class Post {
 

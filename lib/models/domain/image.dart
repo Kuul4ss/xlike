@@ -1,5 +1,5 @@
 
-import 'package:xlike/models/meta.dart';
+import 'package:xlike/models/domain/meta.dart';
 
 class Image {
   String? path;

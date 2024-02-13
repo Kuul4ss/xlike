@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:xlike/authentication/services/user_data_source.dart';
+import 'package:xlike/models/domain/connected_user.dart';
+import 'package:xlike/models/domain/user.dart';
 import 'package:xlike/models/requests/signup_request.dart';
-import 'package:xlike/models/user.dart';
 
-import '../../models/connected_user.dart';
 import '../../models/requests/login_request.dart';
 
 class UserApiDataSource extends UserDataSource {

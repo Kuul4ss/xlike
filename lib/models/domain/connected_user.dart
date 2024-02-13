@@ -1,6 +1,6 @@
 import 'dart:ffi';
 
-import 'package:xlike/models/user.dart';
+import 'package:xlike/models/domain/user.dart';
 
 class ConnectedUser {
   final String authToken;

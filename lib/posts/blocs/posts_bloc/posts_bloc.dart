@@ -1,7 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
-import 'package:xlike/models/post.dart';
+import 'package:xlike/models/domain/post.dart';
+import 'package:xlike/models/requests/request_pagination_info.dart';
 import 'package:xlike/posts/services/posts/posts_repository.dart';
 
 part 'posts_event.dart';

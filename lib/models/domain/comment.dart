@@ -1,4 +1,4 @@
-import 'user.dart';
+import 'package:xlike/models/domain/user.dart';
 
 class Comment {
 

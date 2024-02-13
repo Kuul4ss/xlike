@@ -1,7 +1,8 @@
 
 import 'package:dio/dio.dart';
-import 'package:xlike/models/post.dart';
+import 'package:xlike/models/domain/post.dart';
 import 'package:xlike/models/requests/create_post_request.dart';
+import 'package:xlike/models/requests/request_pagination_info.dart';
 import 'package:xlike/posts/services/posts/posts_data_source.dart';
 
 class PostsApiDataSource extends PostsDataSource {
@@ -13,10 +14,16 @@ class PostsApiDataSource extends PostsDataSource {
   );
 
   @override
-  Future<List<Post>> getAllPosts() async {
+  Future<List<Post>> getAllPosts({RequestPaginationInfo? requestPaginationInfo}) async {
     try {
       print('try getAllPosts request');
-      final response = await dio.get('/post');
+      Response response;
+      if (requestPaginationInfo != null) {
+        response = await dio.get('/post', queryParameters: requestPaginationInfo.toJson());
+      }
+      else {
+        response = await dio.get('/post');
+      }
       print(response);
       final jsonList = response.data['items'] as List;
       return jsonList.map((jsonElement) {
@@ -29,10 +36,16 @@ class PostsApiDataSource extends PostsDataSource {
   }
 
   @override
-  Future<List<Post>> getAllPostsOfUser(int userId) async {
+  Future<List<Post>> getAllPostsOfUser(int userId, {RequestPaginationInfo? requestPaginationInfo}) async {
     try {
       print('try getAllPostsOfUser request');
-      final response = await dio.get('/user/$userId/posts');
+      Response response;
+      if (requestPaginationInfo != null) {
+        response = await dio.get('/user/$userId/posts', queryParameters: requestPaginationInfo.toJson());
+      }
+      else {
+        response = await dio.get('/user/$userId/posts');
+      }
       print(response);
       final jsonList = response.data['items'] as List;
       return jsonList.map((jsonElement) {

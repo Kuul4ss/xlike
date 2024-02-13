@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:xlike/models/post.dart';
+import 'package:xlike/models/domain/post.dart';
 import 'package:xlike/posts/screens/posts_screen.dart';
 import 'package:xlike/posts/screens/user_posts_screen.dart';
 import 'package:xlike/posts/widgets/comment_item.dart';
+import 'package:xlike/posts/widgets/delete_icon.dart';
+import 'package:xlike/posts/widgets/edit_icon.dart';
 import 'package:xlike/posts/widgets/search_icon.dart';
 
 import '../blocs/comments_bloc/comments_bloc.dart';
@@ -42,6 +44,14 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       appBar: AppBar(
         title: const Text('Post detail'),
         actions: [
+          if(false /* check if user is author */ ) ... [
+            DeleteIcon(
+              onTap: () => _onDeleteIconTap(context),
+            ),
+            EditIcon(
+              onTap: () => _onEditIconTap(context),
+            ),
+          ],
           SearchIcon(
             onTap: () => _onSearchIconTap(context),
           ),
@@ -157,6 +167,14 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
         },
       ),
     );
+  }
+
+  void _onDeleteIconTap(BuildContext context) {
+    UserPostsScreen.navigateTo(context, widget.post.author!.id!);
+  }
+
+  void _onEditIconTap(BuildContext context) {
+    UserPostsScreen.navigateTo(context, widget.post.author!.id!);
   }
 
   void _onSearchIconTap(BuildContext context) {
