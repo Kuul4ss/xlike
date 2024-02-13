@@ -3,18 +3,18 @@ import 'dart:ffi';
 import 'package:xlike/models/user.dart';
 
 class ConnectedUser {
-  final String token;
+  final String authToken;
   final User user;
 
 
   const ConnectedUser({
-    required this.token,
+    required this.authToken,
     required this.user
   });
 
   factory ConnectedUser.fromJson(Map<String, dynamic> json) {
     return ConnectedUser(
-      token: json['authToken'],
+      authToken: json['authToken'],
       user:  User.fromJson(json['user']),
     );
   }

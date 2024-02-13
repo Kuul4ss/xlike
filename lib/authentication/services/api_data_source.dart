@@ -23,7 +23,6 @@ class UserApiDataSource extends UserDataSource {
           data: {'email': loginRequest.email, 'password': loginRequest.password});
       return ConnectedUser.fromJson(response.data);
     } catch (error) {
-      print(error.toString());
       rethrow;
     }
   }
@@ -36,7 +35,6 @@ class UserApiDataSource extends UserDataSource {
           data: {'email': signupRequest.email, 'name': signupRequest.name, 'password': signupRequest.password});
       return ConnectedUser.fromJson(response.data);
     } catch (error) {
-      print(error.toString());
       rethrow;
     }
   }

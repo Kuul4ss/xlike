@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:xlike/models/post.dart';
 import 'package:xlike/posts/posts_bloc/posts_bloc.dart';
@@ -71,11 +72,36 @@ class _PostsScreenState extends State<PostsScreen> {
 
   void _onPostTap(BuildContext context, Post post) {
     PostDetailScreen.navigateTo(context, post);
+    loadUserData();
   }
 
   void _onSearchIconTap(BuildContext context) {
     //CartScreen.navigateTo(context);
   }
+
+  Future<Map<String, String>> getUserData() async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    // Get the data from SharedPreferences
+    String? id = prefs.getString('id');
+    String? authToken = prefs.getString('authToken');
+
+    return {
+      'id': id ?? '',
+      'authToken': authToken ?? '',
+    };
+  }
+
+  void loadUserData() async {
+    try {
+      Map<String, String> userData = await getUserData();
+      print("User id: ${userData['id']}");
+      print("Auth Token: ${userData['authToken']}");
+    } catch (e) {
+      print("Failed to load user data: $e");
+    }
+  }
+
 
 }
 
