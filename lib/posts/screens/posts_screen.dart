@@ -8,7 +8,7 @@ import 'package:xlike/posts/widgets/post_item.dart';
 import 'package:xlike/posts/widgets/search_icon.dart';
 
 class PostsScreen extends StatefulWidget {
-  static const String routeName = '/';
+  static const String routeName = '/post';
 
   static void navigateTo(BuildContext context) {
     Navigator.of(context).pushNamed(routeName);

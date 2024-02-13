@@ -1,29 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:xlike/authentication/user_bloc/user_bloc.dart';
 import '../authentication_bloc/authentication_bloc.dart';
 import '../widgets/login_form.dart';
 
 class LoginScreen extends StatelessWidget {
   static const String routeName = '/login';
 
-  static void navigateTo(BuildContext context) {
-    Navigator.of(context).pushNamed(routeName);
-  }
-
   const LoginScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<AuthenticationBloc, AuthenticationState>(
+    return BlocListener<UserBloc, UserState>(
       listener: (context, state) {
+
         switch (state.status) {
-          case AuthenticationStatus.authenticated:
-            Navigator.of(context).pushReplacementNamed('/postPage'); // Remplacez '/postPage' par le nom de la route de votre page post-connexion.
+
+          case UserStatus.loginSuccess:
+            Navigator.of(context).pushReplacementNamed('/post');
+            print(SharedPreferences.getInstance());
             break;
-          case AuthenticationStatus.error:
+          case UserStatus.error:
             _showSnackBar(context, 'Erreur de connexion');
             break;
-          case AuthenticationStatus.loading:
+          case UserStatus.loginLoading:
             _showSnackBar(context, 'Connexion en cours...');
             break;
           default:

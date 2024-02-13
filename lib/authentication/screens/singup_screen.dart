@@ -6,10 +6,6 @@ import '../widgets/signup_form.dart';
 class SignupScreen extends StatelessWidget {
   static const String routeName = '/signup';
 
-  static void navigateTo(BuildContext context) {
-    Navigator.of(context).pushNamed(routeName);
-  }
-
   const SignupScreen({Key? key}) : super(key: key);
 
   @override

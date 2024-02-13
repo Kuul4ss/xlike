@@ -6,7 +6,7 @@ import 'package:xlike/models/user.dart';
 import '../../models/connected_user.dart';
 import '../../models/requests/login_request.dart';
 
-class ApiDataSource extends UserDataSource {
+class UserApiDataSource extends UserDataSource {
 
   final dio = Dio(
   BaseOptions(
@@ -18,11 +18,9 @@ class ApiDataSource extends UserDataSource {
   Future<ConnectedUser> login(LoginRequest loginRequest) async {
 
     try {
-      print("try login");
       final response = await dio.post('/login',
           options: Options(headers: {'Content-Type': 'application/json'}),
           data: {'email': loginRequest.email, 'password': loginRequest.password});
-      print(response.data);
       return ConnectedUser.fromJson(response.data);
     } catch (error) {
       print(error.toString());
