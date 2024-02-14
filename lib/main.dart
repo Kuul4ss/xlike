@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:xlike/app/posts/blocs/create_post_bloc/create_post_bloc.dart';
 import 'package:xlike/models/domain/post.dart';
 import 'package:xlike/services/auth/auth_api_data_source.dart';
 import 'package:xlike/services/auth/auth_repository.dart';
@@ -67,6 +68,11 @@ class MyApp extends StatelessWidget {
           ),
           BlocProvider(
             create: (context) => PostDetailBloc(
+              postsRepository: context.read<PostsRepository>(),
+            ),
+          ),
+          BlocProvider(
+            create: (context) => CreatePostBloc(
               postsRepository: context.read<PostsRepository>(),
             ),
           ),

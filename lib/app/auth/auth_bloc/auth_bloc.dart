@@ -71,15 +71,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     try {
       final response = await authRepository.login(event.request);
-
       final SharedPreferences prefs = await SharedPreferences.getInstance();
       prefs.setString('authToken', response.authToken);
-
-      final User user = await authRepository.me();
+      print('**** response login : ${response.authToken}');
 
       emit(state.copyWith(
         status: AuthStatus.authenticated,
-        user: user,
+        //user: user,
       ));
     } catch (error) {
       emit(state.copyWith(

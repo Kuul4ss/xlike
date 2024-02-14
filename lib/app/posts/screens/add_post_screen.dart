@@ -1,11 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:xlike/app/posts/blocs/create_post_bloc/create_post_bloc.dart';
 import 'package:xlike/app/posts/screens/posts_screen.dart';
+import 'package:xlike/models/requests/create_post_request.dart';
+import 'package:xlike/utils/image_helper.dart';
 
 class AddPostScreen extends StatefulWidget {
-
   static const String routeName = '/addPost';
 
   static void navigateTo(BuildContext context) {
@@ -27,25 +30,74 @@ class _AddPostScreenState extends State<AddPostScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Créer un Post'),
+        title: const Text('Créer un Post'),
       ),
-      body: Column(
-        children: [
-          TextFormField(
-            controller: _textController,
-            decoration: InputDecoration(labelText: 'Votre Post'),
-          ),
-          ElevatedButton(
-            onPressed: _pickImage,
-            child: Text('Ajouter une Image'),
-          ),
-          if (_image != null) Image.file(_image!),
-            ElevatedButton(
-              onPressed: _submitPost,
-              child: Text('Envoyer le post'),
-            ),
-        ],
-      ),
+      body: BlocConsumer<CreatePostBloc, CreatePostState>(
+          listener: (context, state) {
+        if (state.status == CreatePostStatus.success) {
+          PostsScreen.navigateTo(context);
+        }
+      }, builder: (context, state) {
+        switch (state.status) {
+          case CreatePostStatus.success:
+          case CreatePostStatus.error:
+          case CreatePostStatus.initial:
+            return Column(
+              children: [
+                const SizedBox(
+                  height: 30,
+                  child: Text('Contenue de votre Post'),
+                ),
+                SizedBox(
+                  height: 200,
+                  child: SingleChildScrollView(
+                    child: TextFormField(
+                      controller: _textController,
+                      keyboardType: TextInputType.multiline,
+                      maxLines: null,
+                    ),
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: _pickImage,
+                  child: Text('Ajouter une Image'),
+                ),
+                if (_image != null) ...[
+                  Image.file(
+                    _image!,
+                    height: 200,
+                  ),
+                ],
+                ElevatedButton(
+                  onPressed: () => _submitPost(context),
+                  child: Text('Envoyer le post'),
+                ),
+              ],
+            );
+          case CreatePostStatus.loading:
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+        } /*
+
+          return Column(
+            children: [
+              TextFormField(
+                controller: _textController,
+                decoration: InputDecoration(labelText: 'Votre Post'),
+              ),
+              ElevatedButton(
+                onPressed: _pickImage,
+                child: Text('Ajouter une Image'),
+              ),
+              if (_image != null) Image.file(_image!),
+              ElevatedButton(
+                onPressed: () => _submitPost(context),
+                child: Text('Envoyer le post'),
+              ),
+            ],
+          );*/
+      }),
     );
   }
 
@@ -59,13 +111,13 @@ class _AddPostScreenState extends State<AddPostScreen> {
             child: Wrap(
               children: <Widget>[
                 ListTile(
-                  leading: Icon(Icons.camera_alt),
-                  title: Text('Caméra'),
+                  leading: const Icon(Icons.camera_alt),
+                  title: const Text('Camera'),
                   onTap: () => Navigator.pop(context, ImageSource.camera),
                 ),
                 ListTile(
-                  leading: Icon(Icons.photo_library),
-                  title: Text('Galerie'),
+                  leading: const Icon(Icons.photo_library),
+                  title: const Text('Galerie'),
                   onTap: () => Navigator.pop(context, ImageSource.gallery),
                 ),
               ],
@@ -83,9 +135,14 @@ class _AddPostScreenState extends State<AddPostScreen> {
     }
   }
 
-  void _submitPost() {
-
-    PostsScreen.navigateTo(context);
+  void _submitPost(BuildContext context) {
+    BlocProvider.of<CreatePostBloc>(context).add(
+      CreatePost(
+        request: CreatePostRequest(
+          content: _textController.text,
+          base64Image: _image,
+        ),
+      ),
+    );
   }
 }
-

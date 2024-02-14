@@ -19,8 +19,8 @@ class LoginScreen extends StatelessWidget {
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
         switch (state.status) {
-          case AuthStatus.loading:
-            Navigator.of(context).pushReplacementNamed('/post');
+          case AuthStatus.authenticated:
+            Navigator.of(context).pushReplacementNamed('/');
             break;
           case AuthStatus.error:
             _showSnackBar(context, 'Erreur de connexion');

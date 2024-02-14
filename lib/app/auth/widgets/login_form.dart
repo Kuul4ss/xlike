@@ -49,7 +49,7 @@ class LoginForm extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () => _onLoginButtonPressed,
+                onPressed: () => _onLoginButtonPressed(context),
                 child: state.status == AuthStatus.loading
                     ? const CircularProgressIndicator(color: Colors.white)
                     : const Text('Se connecter'),
@@ -63,7 +63,7 @@ class LoginForm extends StatelessWidget {
     );
   }
 
-  void _onLoginButtonPressed(context) {
+  void _onLoginButtonPressed(BuildContext context) {
     final authBloc = BlocProvider.of<AuthBloc>(context);
 
     if (authBloc.state.status != AuthStatus.loading) {

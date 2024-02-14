@@ -62,7 +62,16 @@ class PostItem extends StatelessWidget {
                 ),
               ],
               const SizedBox(height: 10.0),
-              Text(post.content.toString()),
+              ConstrainedBox(
+                constraints: const BoxConstraints(
+                  maxHeight: 120,
+                ),
+                child: Text(
+                  post.content.toString(),
+                  softWrap: true,
+                  overflow: TextOverflow.fade,
+                ),
+              ),
               const SizedBox(height: 10.0),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,

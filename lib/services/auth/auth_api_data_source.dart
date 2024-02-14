@@ -17,7 +17,7 @@ class AuthApiDataSource extends AuthDataSource {
   @override
   Future<SignupResponse> signup(SignupRequest request) async {
     try {
-      print('try signup request');
+      print('**** try signup request');
       Response response = await dioClient.dio.post(
         '$routePrefix/signup',
         data: request.toJson(),
@@ -34,7 +34,7 @@ class AuthApiDataSource extends AuthDataSource {
   @override
   Future<LoginResponse> login(LoginRequest request) async {
     try {
-      print('try login request');
+      print('**** try login request');
       Response response = await dioClient.dio.post(
         '$routePrefix/login',
         data: request.toJson(),
@@ -51,8 +51,8 @@ class AuthApiDataSource extends AuthDataSource {
   @override
   Future<User> me() async {
     try {
-      print('try login request');
-      Response response = await dioClient.dio.post(
+      print('**** try me request');
+      Response response = await dioClient.dio.get(
         '$routePrefix/me',
       );
       print(response);

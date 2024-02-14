@@ -16,7 +16,7 @@ class DioClient {
       BaseOptions(
         baseUrl: 'https://xoc1-kd2t-7p9b.n7c.xano.io/api:xbcc5VEi',
       ),
-    );/*
+    );
     dio.interceptors.add(
       InterceptorsWrapper(
         onRequest: (options, handler) async {
@@ -35,6 +35,6 @@ class DioClient {
           return handler.next(error);
         },
       ),
-    );*/
+    );
   }
 }

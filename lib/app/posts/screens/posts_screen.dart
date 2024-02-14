@@ -10,7 +10,7 @@ import 'package:xlike/app/posts/widgets/post_item.dart';
 import 'package:xlike/models/domain/post.dart';
 
 class PostsScreen extends StatefulWidget {
-  static const String routeName = '/post';
+  static const String routeName = '/';
 
   static void navigateTo(BuildContext context) {
     Navigator.of(context).pushNamed(routeName);
@@ -90,7 +90,7 @@ class _PostsScreenState extends State<PostsScreen> {
     BlocProvider.of<AuthBloc>(context).add(VerifyToken());
     if (context.read<AuthBloc>().state.status == AuthStatus.authenticated) {
       AddPostScreen.navigateTo(context);
-    } else {
+    } else if (context.read<AuthBloc>().state.status == AuthStatus.unauthenticated) {
       LoginScreen.navigateTo(context);
     }
   }
