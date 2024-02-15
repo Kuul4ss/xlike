@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:xlike/app/posts/blocs/create_comment_bloc/create_comment_bloc.dart';
 import 'package:xlike/app/posts/blocs/create_post_bloc/create_post_bloc.dart';
 import 'package:xlike/models/domain/post.dart';
 import 'package:xlike/services/auth/auth_api_data_source.dart';
@@ -12,7 +13,6 @@ import 'package:xlike/services/posts/posts_repository.dart';
 import 'package:xlike/app/auth/auth_bloc/auth_bloc.dart';
 import 'package:xlike/app/auth/screens/login_screen.dart';
 import 'package:xlike/app/auth/screens/singup_screen.dart';
-import 'package:xlike/app/posts/blocs/comments_bloc/comments_bloc.dart';
 import 'package:xlike/app/posts/blocs/post_detail_bloc/post_detail_bloc.dart';
 import 'package:xlike/app/posts/blocs/posts_bloc/posts_bloc.dart';
 import 'package:xlike/app/posts/blocs/user_posts_bloc/user_posts_bloc.dart';
@@ -77,7 +77,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
           BlocProvider(
-            create: (context) => CommentsBloc(
+            create: (context) => CreateCommentBloc(
               commentsRepository: context.read<CommentsRepository>(),
             ),
           ),

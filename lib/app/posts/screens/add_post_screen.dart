@@ -6,7 +6,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:xlike/app/posts/blocs/create_post_bloc/create_post_bloc.dart';
 import 'package:xlike/app/posts/screens/posts_screen.dart';
 import 'package:xlike/models/requests/create_post_request.dart';
-import 'package:xlike/utils/image_helper.dart';
 
 class AddPostScreen extends StatefulWidget {
   static const String routeName = '/addPost';
@@ -33,71 +32,55 @@ class _AddPostScreenState extends State<AddPostScreen> {
         title: const Text('Créer un Post'),
       ),
       body: BlocConsumer<CreatePostBloc, CreatePostState>(
-          listener: (context, state) {
-        if (state.status == CreatePostStatus.success) {
-          PostsScreen.navigateTo(context);
-        }
-      }, builder: (context, state) {
-        switch (state.status) {
-          case CreatePostStatus.success:
-          case CreatePostStatus.error:
-          case CreatePostStatus.initial:
-            return Column(
-              children: [
-                const SizedBox(
-                  height: 30,
-                  child: Text('Contenue de votre Post'),
-                ),
-                SizedBox(
-                  height: 200,
-                  child: SingleChildScrollView(
-                    child: TextFormField(
-                      controller: _textController,
-                      keyboardType: TextInputType.multiline,
-                      maxLines: null,
+        listener: (context, state) {
+          if (state.status == CreatePostStatus.success) {
+            PostsScreen.navigateTo(context);
+          }
+        },
+        builder: (context, state) {
+          switch (state.status) {
+            case CreatePostStatus.success:
+            case CreatePostStatus.error:
+            case CreatePostStatus.initial:
+              return Column(
+                children: [
+                  const SizedBox(
+                    height: 30,
+                    child: Text('Contenue de votre Post'),
+                  ),
+                  SizedBox(
+                    height: 200,
+                    child: SingleChildScrollView(
+                      child: TextFormField(
+                        controller: _textController,
+                        keyboardType: TextInputType.multiline,
+                        maxLines: null,
+                      ),
                     ),
                   ),
-                ),
-                ElevatedButton(
-                  onPressed: _pickImage,
-                  child: Text('Ajouter une Image'),
-                ),
-                if (_image != null) ...[
-                  Image.file(
-                    _image!,
-                    height: 200,
+                  ElevatedButton(
+                    onPressed: _pickImage,
+                    child: Text('Ajouter une Image'),
+                  ),
+                  if (_image != null) ...[
+                    Image.file(
+                      _image!,
+                      height: 200,
+                    ),
+                  ],
+                  ElevatedButton(
+                    onPressed: () => _submitPost(context),
+                    child: Text('Envoyer le post'),
                   ),
                 ],
-                ElevatedButton(
-                  onPressed: () => _submitPost(context),
-                  child: Text('Envoyer le post'),
-                ),
-              ],
-            );
-          case CreatePostStatus.loading:
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-        } /*
-
-          return Column(
-            children: [
-              TextFormField(
-                controller: _textController,
-                decoration: InputDecoration(labelText: 'Votre Post'),
-              ),
-              ElevatedButton(
-                onPressed: _pickImage,
-                child: Text('Ajouter une Image'),
-              ),
-              if (_image != null) Image.file(_image!),
-              ElevatedButton(
-                onPressed: () => _submitPost(context),
-                child: Text('Envoyer le post'),
-              ),
-            ],
-          );*/
-      }),
+              );
+            case CreatePostStatus.loading:
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+          }
+        },
+      ),
     );
   }
 

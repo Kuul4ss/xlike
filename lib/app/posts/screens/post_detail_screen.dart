@@ -1,14 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:xlike/app/auth/auth_bloc/auth_bloc.dart';
+import 'package:xlike/app/auth/screens/login_screen.dart';
+import 'package:xlike/app/posts/blocs/create_comment_bloc/create_comment_bloc.dart';
 import 'package:xlike/models/domain/post.dart';
 import 'package:xlike/app/posts/screens/user_posts_screen.dart';
 import 'package:xlike/app/posts/widgets/comment_item.dart';
 import 'package:xlike/app/posts/widgets/delete_icon.dart';
 import 'package:xlike/app/posts/widgets/edit_icon.dart';
 import 'package:xlike/app/posts/widgets/search_icon.dart';
+import 'package:xlike/models/requests/create_comment_request.dart';
 
-import '../blocs/comments_bloc/comments_bloc.dart';
 import '../blocs/post_detail_bloc/post_detail_bloc.dart';
 
 class PostDetailScreen extends StatefulWidget {
@@ -30,11 +33,13 @@ class PostDetailScreen extends StatefulWidget {
 }
 
 class _PostDetailScreenState extends State<PostDetailScreen> {
+  final TextEditingController _textController = TextEditingController();
+
   @override
   void initState() {
     super.initState();
     final postDetailBloc = BlocProvider.of<PostDetailBloc>(context);
-    postDetailBloc.add(GetPostDetail(id: widget.post.id ?? -1));
+    postDetailBloc.add(GetPostDetail(id: widget.post.id!));
   }
 
   @override
@@ -43,7 +48,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
       appBar: AppBar(
         title: const Text('Post detail'),
         actions: [
-          if(false /* check if user is author */ ) ... [
+          if (false /* check if user is author */) ...[
             DeleteIcon(
               onTap: () => _onDeleteIconTap(context),
             ),
@@ -126,14 +131,61 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
                           const SizedBox(height: 10.0),
                           Text(post?.content.toString() ?? "nothing ?"),
                           const SizedBox(height: 10.0),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              const Icon(Icons.comment,
-                                  size: 20.0, color: Colors.grey),
-                              const SizedBox(width: 5.0),
-                              Text(post?.comments?.length.toString() ?? "0"),
-                            ],
+                          BlocConsumer<CreateCommentBloc, CreateCommentState>(
+                            listener: (context, state) {
+                              if (state.status == CreateCommentStatus.success) {
+                                BlocProvider.of<PostDetailBloc>(context).add(
+                                  GetPostDetail(id: post!.id!),
+                                );
+                              }
+                            },
+                            builder: (context, state) {
+                              switch (state.status) {
+                                case CreateCommentStatus.initial:
+                                case CreateCommentStatus.success:
+                                case CreateCommentStatus.error:
+                                  return Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      const Icon(Icons.comment,
+                                          size: 20.0, color: Colors.grey),
+                                      const SizedBox(width: 5.0),
+                                      Text(post?.comments?.length.toString() ??
+                                          "0"),
+                                    ],
+                                  );
+                                case CreateCommentStatus.writingComment:
+                                  return Column(
+                                    children: [
+                                      const SizedBox(
+                                        height: 30,
+                                        child: Text(
+                                            'Contenue de votre Commentaire'),
+                                      ),
+                                      SizedBox(
+                                        height: 200,
+                                        child: SingleChildScrollView(
+                                          child: TextFormField(
+                                            controller: _textController,
+                                            keyboardType:
+                                                TextInputType.multiline,
+                                            maxLines: null,
+                                          ),
+                                        ),
+                                      ),
+                                      ElevatedButton(
+                                        onPressed: () =>
+                                            _submitComment(context),
+                                        child: Text('Envoyer le commentaire'),
+                                      ),
+                                    ],
+                                  );
+                                case CreateCommentStatus.addingComment:
+                                  return const Center(
+                                    child: CircularProgressIndicator(),
+                                  );
+                              }
+                            },
                           ),
                         ],
                       ),
@@ -155,14 +207,9 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
           }
         },
       ),
-      floatingActionButton: BlocBuilder<CommentsBloc, CommentsState>(
-        builder: (context, state) {
-          final loading = state.status == CommentsStatus.addingComment;
-          return FloatingActionButton(
-            child: Icon(loading ? Icons.refresh : Icons.comment),
-            onPressed: () => _onAddComment(context),
-          );
-        },
+      floatingActionButton: FloatingActionButton(
+        child: const Icon(Icons.comment),
+        onPressed: () => _onAddComment(context),
       ),
     );
   }
@@ -197,9 +244,25 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   void _onAddComment(BuildContext context) {
-    /*
-    //final cartBloc = BlocProvider.of<CartBloc>(context);
-    final commentBloc = context.read<CommentBloc>();
-    commentBloc.add(AddComment(comment: comment));*/
+    BlocProvider.of<AuthBloc>(context).add(VerifyToken());
+    print('**** instant ***');
+    if (context.read<AuthBloc>().state.status == AuthStatus.authenticated) {
+      print('**** add event ***');
+      BlocProvider.of<CreateCommentBloc>(context).add(WritingComment());
+    } else if (context.read<AuthBloc>().state.status ==
+        AuthStatus.unauthenticated) {
+      LoginScreen.navigateTo(context);
+    }
+  }
+
+  void _submitComment(BuildContext context) {
+    BlocProvider.of<CreateCommentBloc>(context).add(
+      CreateComment(
+        request: CreateCommentRequest(
+          postId: widget.post.id!,
+          content: _textController.text,
+        ),
+      ),
+    );
   }
 }
