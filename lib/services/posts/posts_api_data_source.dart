@@ -75,9 +75,9 @@ class PostsApiDataSource extends PostsDataSource {
     try {
       print('try createPost request');
       FormData formData = FormData.fromMap({
-        'base_64_image': await MultipartFile.fromFile(
-          request.base64Image!.path,
-        ),
+        'base_64_image': request.base64Image != null
+            ? await MultipartFile.fromFile(request.base64Image!.path)
+            : null,
         'content': request.content,
       });
       await dioClient.dio.post(

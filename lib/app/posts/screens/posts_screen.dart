@@ -41,32 +41,61 @@ class _PostsScreenState extends State<PostsScreen> {
           )
         ],
       ),
-      body: BlocBuilder<PostsBloc, PostsState>(
+      body: BlocConsumer<AuthBloc, AuthState>(
+        listener: (context, state) {
+          switch (state.status) {
+            case AuthStatus.uninitialized:
+            case AuthStatus.loading:
+              break;
+            case AuthStatus.authenticated:
+              AddPostScreen.navigateTo(context);
+              break;
+            case AuthStatus.error:
+            case AuthStatus.unauthenticated:
+              LoginScreen.navigateTo(context);
+              break;
+          }
+        },
         builder: (context, state) {
           switch (state.status) {
-            case PostsStatus.initial || PostsStatus.loading:
+            case AuthStatus.loading:
               return const Center(
                 child: CircularProgressIndicator(),
               );
-            case PostsStatus.error:
-              return const Center(
-                child: Text('Oups, une erreur est survenue.'),
-              );
-            case PostsStatus.success:
-              final posts = state.posts;
-              return RefreshIndicator(
-                onRefresh: _refreshPosts,
-                child: ListView.separated(
-                  itemCount: posts.length,
-                  separatorBuilder: (context, _) => const SizedBox(height: 5),
-                  itemBuilder: (context, index) {
-                    final post = posts[index];
-                    return PostItem(
-                      post: post,
-                      onTap: () => _onPostTap(context, post),
-                    );
-                  },
-                ),
+            case AuthStatus.authenticated:
+            case AuthStatus.unauthenticated:
+            case AuthStatus.uninitialized:
+            case AuthStatus.error:
+              return BlocBuilder<PostsBloc, PostsState>(
+                builder: (context, state) {
+                  switch (state.status) {
+                    case PostsStatus.initial || PostsStatus.loading:
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    case PostsStatus.error:
+                      return const Center(
+                        child: Text('Oups, une erreur est survenue.'),
+                      );
+                    case PostsStatus.success:
+                      final posts = state.posts;
+                      return RefreshIndicator(
+                        onRefresh: _refreshPosts,
+                        child: ListView.separated(
+                          itemCount: posts.length,
+                          separatorBuilder: (context, _) =>
+                              const SizedBox(height: 5),
+                          itemBuilder: (context, index) {
+                            final post = posts[index];
+                            return PostItem(
+                              post: post,
+                              onTap: () => _onPostTap(context, post),
+                            );
+                          },
+                        ),
+                      );
+                  }
+                },
               );
           }
         },
@@ -88,11 +117,6 @@ class _PostsScreenState extends State<PostsScreen> {
 
   void _onAddPost(BuildContext context) {
     BlocProvider.of<AuthBloc>(context).add(VerifyToken());
-    if (context.read<AuthBloc>().state.status == AuthStatus.authenticated) {
-      AddPostScreen.navigateTo(context);
-    } else if (context.read<AuthBloc>().state.status == AuthStatus.unauthenticated) {
-      LoginScreen.navigateTo(context);
-    }
   }
 
   Future<void> _refreshPosts() async {
