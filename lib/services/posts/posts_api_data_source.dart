@@ -94,4 +94,15 @@ class PostsApiDataSource extends PostsDataSource {
       rethrow;
     }
   }
+
+  @override
+  Future<void> deletePost(int postId) async {
+    try {
+      print('try deletePost request');
+      await dioClient.dio.delete('/post/$postId');
+    } catch (error) {
+      print(error);
+      rethrow;
+    }
+  }
 }

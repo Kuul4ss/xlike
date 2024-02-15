@@ -71,4 +71,10 @@ class FakePostsDataSource extends PostsDataSource {
     );
     _posts.add(newPost);
   }
+
+  @override
+  Future<void> deletePost(int postId) {
+    // TODO: implement deletePost
+    throw UnimplementedError();
+  }
 }

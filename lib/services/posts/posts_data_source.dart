@@ -11,4 +11,6 @@ abstract class PostsDataSource {
   Future<Post> getPostDetail(int id);
 
   Future<void> createPost(CreatePostRequest request);
+
+  Future<void> deletePost(int postId);
 }

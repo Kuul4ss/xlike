@@ -4,6 +4,9 @@ import 'package:intl/intl.dart';
 import 'package:xlike/app/auth/auth_bloc/auth_bloc.dart';
 import 'package:xlike/app/auth/screens/login_screen.dart';
 import 'package:xlike/app/posts/blocs/create_comment_bloc/create_comment_bloc.dart';
+import 'package:xlike/app/posts/blocs/delete_post_bloc/delete_post_bloc.dart';
+import 'package:xlike/app/posts/blocs/posts_bloc/posts_bloc.dart';
+import 'package:xlike/app/posts/screens/posts_screen.dart';
 import 'package:xlike/models/domain/post.dart';
 import 'package:xlike/app/posts/screens/user_posts_screen.dart';
 import 'package:xlike/app/posts/widgets/comment_item.dart';
@@ -44,178 +47,211 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Post detail'),
-        actions: [
-          if (false /* check if user is author */) ...[
-            DeleteIcon(
-              onTap: () => _onDeleteIconTap(context),
-            ),
-            EditIcon(
-              onTap: () => _onEditIconTap(context),
-            ),
-          ],
-          SearchIcon(
-            onTap: () => _onSearchIconTap(context),
-          ),
-        ],
-      ),
-      body: BlocBuilder<PostDetailBloc, PostDetailState>(
-        builder: (context, state) {
-          switch (state.status) {
-            case PostDetailStatus.initial || PostDetailStatus.loading:
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            case PostDetailStatus.error:
-              return const Center(
-                child: Text('Oups, une erreur est survenue.'),
-              );
-            case PostDetailStatus.success:
-              final post = state.post;
-              return Column(
-                children: [
-                  Card(
-                    margin: const EdgeInsets.all(8.0),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
+    return BlocConsumer<DeletePostBloc, DeletePostState>(
+      listener: (context, state) {
+        if (state.status == DeletePostStatus.success) {
+          PostsScreen.navigateTo(context);
+        }
+      },
+      builder: (context, state) {
+        switch (state.status) {
+          case DeletePostStatus.initial:
+          case DeletePostStatus.success:
+          case DeletePostStatus.error:
+            return BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                return Scaffold(
+                  appBar: AppBar(
+                    title: const Text('Post detail'),
+                    actions: [
+                      if (state.status == AuthStatus.authenticated &&
+                          state.user!.id == widget.post.author?.id) ...[
+                        DeleteIcon(
+                          onTap: () => _onDeleteIconTap(context),
+                        ),
+                        EditIcon(
+                          onTap: () => _onEditIconTap(context),
+                        ),
+                      ],
+                      SearchIcon(
+                        onTap: () => _onSearchIconTap(context),
+                      ),
+                    ],
+                  ),
+                  body: BlocBuilder<PostDetailBloc, PostDetailState>(
+                    builder: (context, state) {
+                      switch (state.status) {
+                        case PostDetailStatus.initial || PostDetailStatus.loading:
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
+                        case PostDetailStatus.error:
+                          return const Center(
+                            child: Text('Oups, une erreur est survenue.'),
+                          );
+                        case PostDetailStatus.success:
+                          final post = state.post;
+                          return Column(
                             children: [
-                              const CircleAvatar(
-                                child: Icon(Icons.person,
-                                    size: 20.0, color: Colors.white),
-                              ),
-                              const SizedBox(width: 10.0),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: <Widget>[
-                                    Text(
-                                      post?.author?.name ?? "anonymous",
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    Text(
-                                      DateFormat('yyyy-MM-dd – kk:mm').format(
-                                          DateTime.fromMillisecondsSinceEpoch(
-                                              post?.createdAt ?? 0)),
-                                      style:
-                                          const TextStyle(color: Colors.grey),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                          if (post?.image != null &&
-                              post?.image!.url != null) ...[
-                            const SizedBox(height: 10.0),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 8.0),
-                              child: Center(
-                                child: GestureDetector(
-                                  onTap: () =>
-                                      _onImageTap(context, post.image!.url!),
-                                  child: Image.network(
-                                    post!.image!.url!,
-                                    height: 200,
+                              Card(
+                                margin: const EdgeInsets.all(8.0),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(16.0),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const CircleAvatar(
+                                            child: Icon(Icons.person,
+                                                size: 20.0, color: Colors.white),
+                                          ),
+                                          const SizedBox(width: 10.0),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                              CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                Text(
+                                                  post?.author?.name ?? "anonymous",
+                                                  style: const TextStyle(
+                                                      fontWeight: FontWeight.bold),
+                                                ),
+                                                Text(
+                                                  DateFormat('yyyy-MM-dd – kk:mm')
+                                                      .format(DateTime
+                                                      .fromMillisecondsSinceEpoch(
+                                                      post?.createdAt ?? 0)),
+                                                  style: const TextStyle(
+                                                      color: Colors.grey),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      if (post?.image != null &&
+                                          post?.image!.url != null) ...[
+                                        const SizedBox(height: 10.0),
+                                        Padding(
+                                          padding: const EdgeInsets.only(top: 8.0),
+                                          child: Center(
+                                            child: GestureDetector(
+                                              onTap: () =>
+                                                  _onImageTap(
+                                                      context, post.image!.url!),
+                                              child: Image.network(
+                                                post!.image!.url!,
+                                                height: 200,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                      const SizedBox(height: 10.0),
+                                      Text(post?.content.toString() ?? "nothing ?"),
+                                      const SizedBox(height: 10.0),
+                                      BlocConsumer<CreateCommentBloc,
+                                          CreateCommentState>(
+                                        listener: (context, state) {
+                                          if (state.status ==
+                                              CreateCommentStatus.success) {
+                                            BlocProvider.of<PostDetailBloc>(context)
+                                                .add(
+                                              GetPostDetail(id: post!.id!),
+                                            );
+                                          }
+                                        },
+                                        builder: (context, state) {
+                                          switch (state.status) {
+                                            case CreateCommentStatus.initial:
+                                            case CreateCommentStatus.success:
+                                            case CreateCommentStatus.error:
+                                              return Row(
+                                                mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                                children: [
+                                                  const Icon(Icons.comment,
+                                                      size: 20.0,
+                                                      color: Colors.grey),
+                                                  const SizedBox(width: 5.0),
+                                                  Text(post?.comments?.length
+                                                      .toString() ??
+                                                      "0"),
+                                                ],
+                                              );
+                                            case CreateCommentStatus.writingComment:
+                                              return Column(
+                                                children: [
+                                                  const SizedBox(
+                                                    height: 30,
+                                                    child: Text(
+                                                        'Contenue de votre Commentaire'),
+                                                  ),
+                                                  SizedBox(
+                                                    height: 200,
+                                                    child: SingleChildScrollView(
+                                                      child: TextFormField(
+                                                        controller: _textController,
+                                                        keyboardType:
+                                                        TextInputType.multiline,
+                                                        maxLines: null,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  ElevatedButton(
+                                                    onPressed: () =>
+                                                        _submitComment(context),
+                                                    child:
+                                                    Text('Envoyer le commentaire'),
+                                                  ),
+                                                ],
+                                              );
+                                            case CreateCommentStatus.addingComment:
+                                              return const Center(
+                                                child: CircularProgressIndicator(),
+                                              );
+                                          }
+                                        },
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
-                            ),
-                          ],
-                          const SizedBox(height: 10.0),
-                          Text(post?.content.toString() ?? "nothing ?"),
-                          const SizedBox(height: 10.0),
-                          BlocConsumer<CreateCommentBloc, CreateCommentState>(
-                            listener: (context, state) {
-                              if (state.status == CreateCommentStatus.success) {
-                                BlocProvider.of<PostDetailBloc>(context).add(
-                                  GetPostDetail(id: post!.id!),
-                                );
-                              }
-                            },
-                            builder: (context, state) {
-                              switch (state.status) {
-                                case CreateCommentStatus.initial:
-                                case CreateCommentStatus.success:
-                                case CreateCommentStatus.error:
-                                  return Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      const Icon(Icons.comment,
-                                          size: 20.0, color: Colors.grey),
-                                      const SizedBox(width: 5.0),
-                                      Text(post?.comments?.length.toString() ??
-                                          "0"),
-                                    ],
-                                  );
-                                case CreateCommentStatus.writingComment:
-                                  return Column(
-                                    children: [
-                                      const SizedBox(
-                                        height: 30,
-                                        child: Text(
-                                            'Contenue de votre Commentaire'),
-                                      ),
-                                      SizedBox(
-                                        height: 200,
-                                        child: SingleChildScrollView(
-                                          child: TextFormField(
-                                            controller: _textController,
-                                            keyboardType:
-                                                TextInputType.multiline,
-                                            maxLines: null,
-                                          ),
-                                        ),
-                                      ),
-                                      ElevatedButton(
-                                        onPressed: () =>
-                                            _submitComment(context),
-                                        child: Text('Envoyer le commentaire'),
-                                      ),
-                                    ],
-                                  );
-                                case CreateCommentStatus.addingComment:
-                                  return const Center(
-                                    child: CircularProgressIndicator(),
-                                  );
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
+                              Expanded(
+                                child: ListView.separated(
+                                  itemCount: post?.comments?.length ?? 0,
+                                  separatorBuilder: (context, _) =>
+                                  const SizedBox(height: 5),
+                                  itemBuilder: (context, index) {
+                                    final comment = post?.comments?[index];
+                                    return CommentItem(comment: comment!);
+                                  },
+                                ),
+                              )
+                            ],
+                          );
+                      }
+                    },
                   ),
-                  Expanded(
-                    child: ListView.separated(
-                      itemCount: post?.comments?.length ?? 0,
-                      separatorBuilder: (context, _) =>
-                          const SizedBox(height: 5),
-                      itemBuilder: (context, index) {
-                        final comment = post?.comments?[index];
-                        return CommentItem(comment: comment!);
-                      },
-                    ),
-                  )
-                ],
-              );
-          }
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.comment),
-        onPressed: () => _onAddComment(context),
-      ),
+                  floatingActionButton: FloatingActionButton(
+                    child: const Icon(Icons.comment),
+                    onPressed: () => _onAddComment(context),
+                  ),
+                );
+              },
+            );
+          case DeletePostStatus.loading:
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+        }
+      }
     );
   }
 
   void _onDeleteIconTap(BuildContext context) {
-    UserPostsScreen.navigateTo(context, widget.post.author!.id!);
+    BlocProvider.of<DeletePostBloc>(context).add(DeletePost(postId: widget.post.id!));
   }
 
   void _onEditIconTap(BuildContext context) {
