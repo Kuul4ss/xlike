@@ -11,12 +11,11 @@ class CreateCommentBloc extends Bloc<CommentsEvent, CreateCommentState> {
   final CommentsRepository commentsRepository;
 
   CreateCommentBloc({required this.commentsRepository}) : super(CreateCommentState()) {
-    on<WritingComment>(_onWritingComment);
     on<CreateComment>(_onCreateComment);
   }
 
   void _onCreateComment(CreateComment event, Emitter<CreateCommentState> emit) async {
-    emit(state.copyWith(status: CreateCommentStatus.addingComment));
+    emit(state.copyWith(status: CreateCommentStatus.loading));
 
     try {
       await commentsRepository.addComment(event.request);
@@ -31,10 +30,4 @@ class CreateCommentBloc extends Bloc<CommentsEvent, CreateCommentState> {
       ));
     }
   }
-
-  void _onWritingComment(WritingComment event, Emitter<CreateCommentState> emit) {
-    emit(state.copyWith(status: CreateCommentStatus.writingComment));
-    print('**** writing comment ***');
-  }
-
 }

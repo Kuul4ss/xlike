@@ -43,7 +43,7 @@ class LoginScreen extends StatelessWidget {
               LoginForm(),
               TextButton(
                 onPressed: () => Navigator.of(context).pushNamed(SignupScreen.routeName),
-                child: Text('Pas de compte ? Inscrivez-vous'),
+                child: const Text('Pas de compte ? Inscrivez-vous'),
               ),
             ],
           ),

@@ -17,16 +17,13 @@ class AuthApiDataSource extends AuthDataSource {
   @override
   Future<SignupResponse> signup(SignupRequest request) async {
     try {
-      print('**** try signup request');
       Response response = await dioClient.dio.post(
         '$routePrefix/signup',
         data: request.toJson(),
       );
-      print(response);
       final jsonElement = response.data;
       return SignupResponse.fromJson(jsonElement as Map<String, dynamic>);
     } catch (error) {
-      print(error);
       rethrow;
     }
   }
@@ -34,16 +31,13 @@ class AuthApiDataSource extends AuthDataSource {
   @override
   Future<LoginResponse> login(LoginRequest request) async {
     try {
-      print('**** try login request');
       Response response = await dioClient.dio.post(
         '$routePrefix/login',
         data: request.toJson(),
       );
-      print(response);
       final jsonElement = response.data;
       return LoginResponse.fromJson(jsonElement as Map<String, dynamic>);
     } catch (error) {
-      print(error);
       rethrow;
     }
   }
@@ -51,15 +45,12 @@ class AuthApiDataSource extends AuthDataSource {
   @override
   Future<User> me() async {
     try {
-      print('**** try me request');
       Response response = await dioClient.dio.get(
         '$routePrefix/me',
       );
-      print(response);
       final jsonElement = response.data;
       return User.fromJson(jsonElement as Map<String, dynamic>);
     } catch (error) {
-      print(error);
       rethrow;
     }
   }

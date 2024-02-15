@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:xlike/app/posts/blocs/create_comment_bloc/create_comment_bloc.dart';
 import 'package:xlike/app/posts/blocs/create_post_bloc/create_post_bloc.dart';
 import 'package:xlike/app/posts/blocs/delete_post_bloc/delete_post_bloc.dart';
+import 'package:xlike/app/posts/blocs/update_post_bloc/update_post_bloc.dart';
+import 'package:xlike/app/posts/screens/create_comment_screen.dart';
+import 'package:xlike/app/posts/screens/update_post_screen.dart';
 import 'package:xlike/models/domain/post.dart';
 import 'package:xlike/services/auth/auth_api_data_source.dart';
 import 'package:xlike/services/auth/auth_repository.dart';
@@ -17,7 +20,7 @@ import 'package:xlike/app/auth/screens/singup_screen.dart';
 import 'package:xlike/app/posts/blocs/post_detail_bloc/post_detail_bloc.dart';
 import 'package:xlike/app/posts/blocs/posts_bloc/posts_bloc.dart';
 import 'package:xlike/app/posts/blocs/user_posts_bloc/user_posts_bloc.dart';
-import 'package:xlike/app/posts/screens/add_post_screen.dart';
+import 'package:xlike/app/posts/screens/create_post_screen.dart';
 import 'package:xlike/app/posts/screens/post_detail_screen.dart';
 import 'package:xlike/app/posts/screens/posts_screen.dart';
 import 'package:xlike/app/posts/screens/user_posts_screen.dart';
@@ -78,6 +81,11 @@ class MyApp extends StatelessWidget {
             ),
           ),
           BlocProvider(
+            create: (context) => UpdatePostBloc(
+              postsRepository: context.read<PostsRepository>(),
+            ),
+          ),
+          BlocProvider(
             create: (context) => DeletePostBloc(
               postsRepository: context.read<PostsRepository>(),
             ),
@@ -91,7 +99,7 @@ class MyApp extends StatelessWidget {
         child: MaterialApp(
           routes: {
             '/': (context) => const PostsScreen(),
-            '/addPost': (context) => const AddPostScreen(),
+            '/addPost': (context) => const CreatePostScreen(),
             '/signup': (context) => const SignupScreen(),
             '/login': (context) => const LoginScreen(),
           },
@@ -105,6 +113,18 @@ class MyApp extends StatelessWidget {
                   content = PostDetailScreen(post: arguments);
                 }
                 break;
+              case UpdatePostScreen.routeName:
+                final arguments = settings.arguments;
+                if (arguments is Post) {
+                  content = UpdatePostScreen(post: arguments);
+                }
+                break;
+              case CreateCommentScreen.routeName:
+                final arguments = settings.arguments;
+                if (arguments is int) {
+                  content = CreateCommentScreen(postId: arguments);
+                }
+                break;
               case UserPostsScreen.routeName:
                 final arguments = settings.arguments;
                 if (arguments is int) {
@@ -115,6 +135,10 @@ class MyApp extends StatelessWidget {
 
             return MaterialPageRoute(builder: (context) => content);
           },
+          theme: ThemeData(
+            textTheme: const TextTheme(
+            )
+          ),
         ),
       ),
     );

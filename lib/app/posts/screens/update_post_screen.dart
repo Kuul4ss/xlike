@@ -3,45 +3,58 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:xlike/app/posts/blocs/create_post_bloc/create_post_bloc.dart';
-import 'package:xlike/app/posts/screens/posts_screen.dart';
-import 'package:xlike/models/requests/create_post_request.dart';
+import 'package:xlike/app/posts/blocs/update_post_bloc/update_post_bloc.dart';
+import 'package:xlike/models/domain/post.dart';
+import 'package:xlike/models/requests/update_post_request.dart';
 
-class AddPostScreen extends StatefulWidget {
-  static const String routeName = '/addPost';
+class UpdatePostScreen extends StatefulWidget {
+  static const String routeName = '/editPost';
 
-  static void navigateTo(BuildContext context) {
-    Navigator.of(context).pushNamed(routeName);
+  static void navigateTo(BuildContext context, Post post) {
+    Navigator.of(context).pushNamed(routeName, arguments: post);
   }
 
-  const AddPostScreen({super.key});
+  const UpdatePostScreen({
+    super.key,
+    required this.post,
+  });
+
+  final Post post;
 
   @override
-  _AddPostScreenState createState() => _AddPostScreenState();
+  _UpdatePostScreenState createState() => _UpdatePostScreenState();
 }
 
-class _AddPostScreenState extends State<AddPostScreen> {
+class _UpdatePostScreenState extends State<UpdatePostScreen> {
   final TextEditingController _textController = TextEditingController();
 
   File? _image;
 
   @override
+  void initState() {
+    super.initState();
+    _textController.text = widget.post.content ?? "";
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Créer un Post'),
+        title: const Text('Editer un Post'),
       ),
-      body: BlocConsumer<CreatePostBloc, CreatePostState>(
+      body: BlocConsumer<UpdatePostBloc, UpdatePostState>(
         listener: (context, state) {
-          if (state.status == CreatePostStatus.success) {
-            PostsScreen.navigateTo(context);
+          if (state.status == UpdatePostStatus.success) {
+            //PostDetailScreen.replaceTo(context, state.post!);
+            Navigator.of(context).pop();
           }
         },
         builder: (context, state) {
           switch (state.status) {
-            case CreatePostStatus.success:
-            case CreatePostStatus.error:
-            case CreatePostStatus.initial:
+            case UpdatePostStatus.success:
+            case UpdatePostStatus.error:
+            case UpdatePostStatus.initial:
+              final post = widget.post;
               return Column(
                 children: [
                   const SizedBox(
@@ -62,6 +75,23 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     onPressed: _pickImage,
                     child: Text('Ajouter une Image'),
                   ),
+                  if (post.image?.url != null && _image == null) ...[
+                    const SizedBox(height: 10.0),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: Center(
+                        child: GestureDetector(/*
+                          onTap: () =>
+                              _onImageTap(
+                                  context, post.image!.url!),*/
+                          child: Image.network(
+                            post.image!.url!,
+                            height: 200,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                   if (_image != null) ...[
                     Image.file(
                       _image!,
@@ -69,12 +99,12 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     ),
                   ],
                   ElevatedButton(
-                    onPressed: () => _submitPost(context),
-                    child: Text('Envoyer le post'),
+                    onPressed: () => _submitPost(context, post.id!),
+                    child: const Text('Modifier le post'),
                   ),
                 ],
               );
-            case CreatePostStatus.loading:
+            case UpdatePostStatus.loading:
               return const Center(
                 child: CircularProgressIndicator(),
               );
@@ -85,7 +115,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
   }
 
   Future<void> _pickImage() async {
-    final ImagePicker _picker = ImagePicker();
+    final ImagePicker picker = ImagePicker();
     // Affiche une feuille modale depuis le bas
     final source = await showModalBottomSheet<ImageSource>(
         context: context,
@@ -109,7 +139,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
         });
 
     if (source != null) {
-      final pickedFile = await _picker.pickImage(source: source);
+      final pickedFile = await picker.pickImage(source: source);
       if (pickedFile != null) {
         setState(() {
           _image = File(pickedFile.path);
@@ -118,10 +148,11 @@ class _AddPostScreenState extends State<AddPostScreen> {
     }
   }
 
-  void _submitPost(BuildContext context) {
-    BlocProvider.of<CreatePostBloc>(context).add(
-      CreatePost(
-        request: CreatePostRequest(
+  void _submitPost(BuildContext context, int postId) {
+    BlocProvider.of<UpdatePostBloc>(context).add(
+      UpdatePost(
+        request: UpdatePostRequest(
+          postId: postId,
           content: _textController.text,
           base64Image: _image,
         ),

@@ -8,6 +8,10 @@ class CommentsRepository {
   CommentsRepository({required this.commentsDataSource});
 
   Future<Comment> addComment(CreateCommentRequest request) async {
-    return commentsDataSource.addComment(request);
+    return commentsDataSource.createComment(request);
+  }
+
+  Future<void> deleteComment(int commentId) async {
+    return commentsDataSource.deleteComment(commentId);
   }
 }

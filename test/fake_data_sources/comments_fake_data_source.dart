@@ -7,7 +7,7 @@ class FakeCommentsDataSource extends CommentsDataSource {
   List<Comment> _comments = [];
 
   @override
-  Future<Comment> addComment(CreateCommentRequest request) async {
+  Future<Comment> createComment(CreateCommentRequest request) async {
     await Future.delayed(const Duration(seconds: 1));
 
     final newComment = Comment(
@@ -26,5 +26,11 @@ class FakeCommentsDataSource extends CommentsDataSource {
     _comments.add(newComment);
 
     return newComment;
+  }
+
+  @override
+  Future<void> deleteComment(int commentId) {
+    // TODO: implement deleteComment
+    throw UnimplementedError();
   }
 }

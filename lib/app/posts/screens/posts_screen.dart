@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:xlike/app/auth/auth_bloc/auth_bloc.dart';
 import 'package:xlike/app/auth/screens/login_screen.dart';
 import 'package:xlike/app/posts/blocs/posts_bloc/posts_bloc.dart';
-import 'package:xlike/app/posts/screens/add_post_screen.dart';
+import 'package:xlike/app/posts/screens/create_post_screen.dart';
 import 'package:xlike/app/posts/screens/post_detail_screen.dart';
 import 'package:xlike/app/posts/widgets/account_icon.dart';
 import 'package:xlike/app/posts/widgets/post_item.dart';
@@ -23,6 +22,8 @@ class PostsScreen extends StatefulWidget {
 }
 
 class _PostsScreenState extends State<PostsScreen> {
+
+
   @override
   void initState() {
     super.initState();
@@ -41,68 +42,40 @@ class _PostsScreenState extends State<PostsScreen> {
           )
         ],
       ),
-      body: BlocConsumer<AuthBloc, AuthState>(
-        listener: (context, state) {
-          switch (state.status) {
-            case AuthStatus.uninitialized:
-            case AuthStatus.loading:
-              break;
-            case AuthStatus.authenticated:
-              AddPostScreen.navigateTo(context);
-              break;
-            case AuthStatus.error:
-            case AuthStatus.unauthenticated:
-              LoginScreen.navigateTo(context);
-              break;
-          }
-        },
+      body: BlocBuilder<PostsBloc, PostsState>(
         builder: (context, state) {
           switch (state.status) {
-            case AuthStatus.loading:
+            case PostsStatus.initial || PostsStatus.loading:
               return const Center(
                 child: CircularProgressIndicator(),
               );
-            case AuthStatus.authenticated:
-            case AuthStatus.unauthenticated:
-            case AuthStatus.uninitialized:
-            case AuthStatus.error:
-              return BlocBuilder<PostsBloc, PostsState>(
-                builder: (context, state) {
-                  switch (state.status) {
-                    case PostsStatus.initial || PostsStatus.loading:
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    case PostsStatus.error:
-                      return const Center(
-                        child: Text('Oups, une erreur est survenue.'),
-                      );
-                    case PostsStatus.success:
-                      final posts = state.posts;
-                      return RefreshIndicator(
-                        onRefresh: _refreshPosts,
-                        child: ListView.separated(
-                          itemCount: posts.length,
-                          separatorBuilder: (context, _) =>
-                              const SizedBox(height: 5),
-                          itemBuilder: (context, index) {
-                            final post = posts[index];
-                            return PostItem(
-                              post: post,
-                              onTap: () => _onPostTap(context, post),
-                            );
-                          },
-                        ),
-                      );
-                  }
-                },
+            case PostsStatus.error:
+              return const Center(
+                child: Text('Oups, une erreur est survenue.'),
+              );
+            case PostsStatus.success:
+              final posts = state.posts;
+              return RefreshIndicator(
+                onRefresh: _refreshPosts,
+                child: ListView.separated(
+                  itemCount: posts.length,
+                  separatorBuilder: (context, _) =>
+                      const SizedBox(height: 5),
+                  itemBuilder: (context, index) {
+                    final post = posts[index];
+                    return PostItem(
+                      post: post,
+                      onTap: () => _onPostTap(context, post),
+                    );
+                  },
+                ),
               );
           }
         },
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.post_add),
-        onPressed: () => _onAddPost(context),
+        onPressed: () => _onCreatePost(context),
       ),
     );
   }
@@ -115,8 +88,9 @@ class _PostsScreenState extends State<PostsScreen> {
     LoginScreen.navigateTo(context);
   }
 
-  void _onAddPost(BuildContext context) {
-    BlocProvider.of<AuthBloc>(context).add(VerifyToken());
+  void _onCreatePost(BuildContext context) {
+    CreatePostScreen.navigateTo(context)
+        .then((_) => _refreshPosts);
   }
 
   Future<void> _refreshPosts() async {

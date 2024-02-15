@@ -1,10 +1,11 @@
 import 'dart:math';
+
+import 'package:xlike/models/domain/image.dart';
 import 'package:xlike/models/domain/post.dart';
 import 'package:xlike/models/domain/user.dart';
-import 'package:xlike/models/domain/image.dart';
-import 'package:xlike/models/domain/comment.dart';
 import 'package:xlike/models/requests/create_post_request.dart';
 import 'package:xlike/models/requests/request_pagination_info.dart';
+import 'package:xlike/models/requests/update_post_request.dart';
 import 'package:xlike/services/posts/posts_data_source.dart';
 
 class FakePostsDataSource extends PostsDataSource {
@@ -75,6 +76,12 @@ class FakePostsDataSource extends PostsDataSource {
   @override
   Future<void> deletePost(int postId) {
     // TODO: implement deletePost
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<Post> updatePost(UpdatePostRequest request) {
+    // TODO: implement updatePost
     throw UnimplementedError();
   }
 }

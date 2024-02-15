@@ -36,7 +36,7 @@ class PostItem extends StatelessWidget {
                       children: <Widget>[
                         Text(
                           post.author?.name ?? "anonymous",
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          style: Theme.of(context).textTheme.titleSmall,
                         ),
                         Text(
                           DateFormat('yyyy-MM-dd – kk:mm').format(

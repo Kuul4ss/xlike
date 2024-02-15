@@ -2,8 +2,7 @@ part of 'create_comment_bloc.dart';
 
 enum CreateCommentStatus {
   initial,
-  writingComment,
-  addingComment,
+  loading,
   success,
   error,
 }
