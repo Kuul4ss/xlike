@@ -211,8 +211,7 @@ class _PostDetailScreenState extends State<PostDetailScreen> {
   }
 
   void _onDeleteIconTap(BuildContext context) {
-    BlocProvider.of<DeletePostBloc>(context)
-        .add(DeletePost(postId: widget.post.id!));
+    BlocProvider.of<DeletePostBloc>(context).add(DeletePost(postId: widget.post.id!));
   }
 
   void _onEditIconTap(BuildContext context) {
