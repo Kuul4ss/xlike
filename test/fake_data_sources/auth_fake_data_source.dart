@@ -1,9 +1,9 @@
-import '../../models/domain/user.dart';
-import '../../models/requests/login_request.dart';
-import '../../models/requests/signup_request.dart';
-import '../../models/responses/login_response.dart';
-import '../../models/responses/signup_response.dart';
-import 'auth_data_source.dart';
+import '../../lib/models/domain/user.dart';
+import '../../lib/models/requests/login_request.dart';
+import '../../lib/models/requests/signup_request.dart';
+import '../../lib/models/responses/login_response.dart';
+import '../../lib/models/responses/signup_response.dart';
+import '../../lib/services/auth/auth_data_source.dart';
 
 class FakeAuthDataSource extends AuthDataSource {
   @override
